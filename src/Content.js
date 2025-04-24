@@ -1,30 +1,51 @@
+import { useState } from "react";
+import { FaTrashAlt} from "react-icons/fa";
+
 const Content = () => {
-    const handleNameChange = () => {
-        const name = ["Bhism", "Anas", "Nitin"];
-        const int = Math.floor(Math.random()*3);
-        return name[int];
-      }
-
-      const handleClick = () => {
-        console.log("You Clicked Here!")
-      }
+    const [items, setItems] = useState([
+        {id:1, checked:false, item: 'Box One'},
+        {id:2, checked:false, item: 'Box Two'},
+        {id:3, checked:false, item: 'Box Three'}
+    ]);
     
-      const handleClick2 = (name1) => {
-        console.log(`${name1} was clicked`)
-      }
+    const handleCheck =(id)=>{
+        const listItems =items.map((item)=>item.id === id ?
+            {...item, checked: !item.checked} : item
+        );
+        setItems(listItems);
+        localStorage.setItem('shoppingList', 
+            JSON.stringify(listItems));
 
-      const handleClick3 = (e) => {
-        console.log(e.target.innerText)
-      }
+    }
+
+    const handleDelete = (id)=>{
+       const listItems = items.filter((item)=>item.id!==id);
+       setItems(listItems);
+       localStorage.setItem('shoppingList', JSON.stringify(listItems));
+    }
 
     return (
         <main>
-        
-            <p onDoubleClick={handleClick}>Hello {handleNameChange()}!</p>
-            <button onClick={handleClick}>Click It</button>
-            <button onClick={()=>handleClick2('Bhism')}>Click On</button>
-            <button onClick={(e)=>handleClick3(e)}>Click On</button>
-        </main>
+          {items.length ? (
+            <ui>{items.map((item)=>(
+                <li className="item" key={item.id}>
+                    <input type="checkbox"
+                    onChange={()=>handleCheck(item.id)}
+                    checked={item.checked}></input>
+                    <label
+                    style={(item.checked) ? {textDecoration: 'line-through'} : null}
+                    onDoubleClick={()=>handleCheck(item.id)}
+                    >{item.item}</label>
+                    <FaTrashAlt 
+                    onClick={()=>handleDelete(item.id)}
+                    role="button" tabIndex="0"></FaTrashAlt>
+                </li>
+            ))}
+            </ui> 
+          ) : (
+            <p style={{marginTop: '2rem'}}>Your list is empty!</p>
+          )}
+             </main>
     )
 }
 
